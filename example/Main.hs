@@ -76,7 +76,7 @@ spec =
 
 rootFoo :: Foo
 rootFoo =
-    Foo{ qux = 123, baz = Just "root foo", bars }
+    Foo{ qux = 123, baz = Nothing, bars }
   where
     bars = map mkBar [1..100]
 
@@ -101,7 +101,8 @@ foo = defineObject @"Foo" objectSpec
   , fields =
     [ field "qux" (nonNull int) fieldSpec
       { description = "qux"
-      , resolver = \_ Foo{ qux } ->
+      , resolver = \_ Foo{ qux } -> do
+        putStrLn ("whatever" :: Text)
         pure qux
       }
     , field "baz" string fieldSpec
