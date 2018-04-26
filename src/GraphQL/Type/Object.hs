@@ -13,15 +13,15 @@ module GraphQL.Type.Object
 import Protolude
 
 import qualified Data.Map as Map (elems, findWithDefault, fromList, lookup)
-import Data.Row (Label, Rec, Row)
+import Data.Row (Label, Rec, Row, KnownSymbol)
 import qualified Data.Row.Internal as Row
-import GraphQL.Execution.Context (ExecutionContext(..)) 
+import GraphQL.Execution.Context (ExecutionContext(..))
 import GraphQL.Execution.Result (Result, ExecutionError(..), resultValidated, resultObject, resultValue)
 import qualified GraphQL.Language.AST as AST
 import qualified GraphQL.Type.InputValue as InputValue
 import qualified GraphQL.Type.Schema as Schema
 import GraphQL.Validation.Schema (satisfiesTypeCondition)
-import qualified GraphQL.Validation.Validator as Validator 
+import qualified GraphQL.Validation.Validator as Validator
 
 
 data Definition m value =
@@ -41,7 +41,7 @@ data Field m context =
       , deprecation :: Maybe Text
       , definition :: Schema.OutputType
       , arguments :: InputValue.Collection args
-      , resolver :: FieldContext context args -> m Result 
+      , resolver :: FieldContext context args -> m Result
       }
 
 data FieldContext context args =
@@ -125,7 +125,7 @@ resolveObject Definition{..} ctx@ExecutionContext{..} =
             { parentContext = ctx
             , directives
             , arguments = resolvedArgs
-            , responseKey = responseKey 
+            , responseKey = responseKey
             , subSelection
             }
       where
@@ -133,7 +133,7 @@ resolveObject Definition{..} ctx@ExecutionContext{..} =
 
 
     -- TODO: consider performance here, this is likely a lot of redundant work
-    substArgs :: [AST.Argument] -> [AST.Argument] 
+    substArgs :: [AST.Argument] -> [AST.Argument]
     substArgs = map (\(AST.Argument name value) -> AST.Argument name (substValue value))
 
     substValue :: AST.Value -> AST.Value

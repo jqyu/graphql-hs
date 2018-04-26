@@ -10,17 +10,17 @@ module GraphQL.Type.InputValue
 import Protolude
 
 import qualified Data.Map as Map (fromList, findWithDefault)
-import Data.Row (Empty, Label, Row, Rec, type (.+), type (.==), (.+), (.==), labels)
+import Data.Row (Empty, Label, Row, Rec, KnownSymbol, type (.+), type (.==), (.+), (.==), labels)
 import qualified Data.Row.Records as Rec (empty)
 import GHC.Types (Type)
 import GraphQL.Execution.Result (ExecutionError(..))
 import qualified GraphQL.Language.AST as AST
 import qualified GraphQL.Type.Schema as Schema
-import qualified GraphQL.Validation.Validator as Validator 
+import qualified GraphQL.Validation.Validator as Validator
 
 
 data Definition value =
-  Definition 
+  Definition
     { description :: Text
     , definition :: Schema.InputType
     , defaultValue :: Maybe value
@@ -32,9 +32,9 @@ data Definition value =
 data Collection (args :: Row Type) where
   None
     :: Collection Empty
-  Merge 
-    :: Collection l 
-    -> Collection r 
+  Merge
+    :: Collection l
+    -> Collection r
     -> Collection (l .+ r)
   Single
     :: (KnownSymbol sym)
@@ -83,7 +83,7 @@ resolveInputObject def =
   resolveCollectionValues def
     . Map.fromList
     . map toAssoc
-    . unwrap 
+    . unwrap
   where
     toAssoc (AST.ObjectField name value) = (AST.unName name, value)
     unwrap (AST.ObjectValue fields) = fields
@@ -104,7 +104,7 @@ resolveCollectionValues (Single label (Definition{..})) values =
       Just v -> pure (label .== v)
       Nothing ->
         Validator.throw ArgumentInvalid
-          { argumentName 
+          { argumentName
           , expectedInputType = definition
           , value
           }

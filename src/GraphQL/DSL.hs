@@ -34,7 +34,7 @@ module GraphQL.DSL
 
 import Protolude
 
-import Data.Row (Empty, Rec, Label(..), HasType, type (.+), type (.==), (.!))
+import Data.Row (Empty, Rec, Label(..), HasType, KnownSymbol, type (.+), type (.==), (.!))
 import GraphQL.Execution.Context (ExecutionContext(..), ResponseSegment(..))
 import GraphQL.Type.Definition
 import qualified GraphQL.Execution.Resolve as Resolve
@@ -45,7 +45,7 @@ import qualified GraphQL.Type.Object as Object
 
 interface
   :: forall label m value row. (KnownSymbol label, HasType label value row)
-  => InterfaceDefinition m row 
+  => InterfaceDefinition m row
   -> Label label
   -> Object.InterfaceFor m value
 interface (InterfaceDefinition def) = flip Object.InterfaceFor def
@@ -116,7 +116,7 @@ defineObject (ObjectSpec{..}) =
 data FieldSpec m context args value =
   FieldSpec
     { description :: Text
-    , deprecation :: Maybe Text 
+    , deprecation :: Maybe Text
     , arguments :: InputValue.Collection args
     , resolver :: Rec args -> context -> m value
     }
@@ -127,7 +127,7 @@ fieldSpec = FieldSpec
   { description = ""
   , deprecation = Nothing
   , arguments = InputValue.None
-  , resolver = \_ _ -> pure () 
+  , resolver = \_ _ -> pure ()
   }
 
 
@@ -138,7 +138,7 @@ field
   -> FieldSpec m context args value
   -> Object.Field m context
 field name def (FieldSpec {..}) =
-    Object.Field 
+    Object.Field
       { name
       , description
       , deprecation
@@ -171,7 +171,7 @@ field name def (FieldSpec {..}) =
 --     argWithDefault @"times" int 1 argSpec
 --       { description =
 --           "Number of times to repeat the string (defaults to 1)"
---       } 
+--       }
 --  , resolve =
 --      \args root -> do
 --        let str = root .! #string
@@ -217,7 +217,7 @@ getArg
   => Rec row
   -> value
 getArg rec = rec .! (Label :: Label label)
- 
+
 
 argWithDefault
   :: forall label m kind value
@@ -243,5 +243,5 @@ argWithDefault def defaultValue (ArgSpec {..}) =
 
 
 infixl 6 ++++
-(++++) :: InputValue.Collection l -> InputValue.Collection r -> InputValue.Collection (l .+ r) 
+(++++) :: InputValue.Collection l -> InputValue.Collection r -> InputValue.Collection (l .+ r)
 (++++) = InputValue.Merge

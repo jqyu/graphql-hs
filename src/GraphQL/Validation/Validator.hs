@@ -12,6 +12,7 @@ module GraphQL.Validation.Validator
 
 import Protolude hiding ((<>), note)
 
+import Data.List.NonEmpty (NonEmpty(..), nonEmpty)
 import Data.Semigroup ((<>))
 
 newtype M e a
